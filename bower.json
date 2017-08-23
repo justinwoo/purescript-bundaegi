@@ -1,0 +1,17 @@
+{
+  "name": "purescript-bundaegi",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "output"
+  ],
+  "dependencies": {
+    "purescript-generics-rep": "^5.2.0",
+    "purescript-typelevel-prelude": "^2.4.0",
+    "purescript-lists": "^4.9.0"
+  },
+  "devDependencies": {
+    "purescript-spec": "^1.0.0"
+  }
+}
