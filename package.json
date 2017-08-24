@@ -1,0 +1,25 @@
+{
+  "name": "purescript-bundaegi",
+  "version": "1.0.0",
+  "description": "...because nobody really wants to eat boiled silkworms (or write Typescript)",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/justinwoo/purescript-bundaegi.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/justinwoo/purescript-bundaegi/issues"
+  },
+  "homepage": "https://github.com/justinwoo/purescript-bundaegi#readme",
+  "devDependencies": {
+    "prettier": "^1.5.3"
+  }
+}

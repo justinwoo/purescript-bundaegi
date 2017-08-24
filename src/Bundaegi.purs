@@ -6,6 +6,7 @@ import Data.Foldable (intercalate)
 import Data.Generic.Rep (class Generic, Argument, Constructor, Field, NoArguments, Product, Rec, Sum)
 import Data.List (List, (:))
 import Data.Monoid (mempty)
+import Data.String (null)
 import Partial.Unsafe (unsafeCrashWith)
 import Type.Prelude (class IsSymbol, class RowToList, RLProxy(RLProxy), SProxy(SProxy), reflectSymbol)
 import Type.Proxy (Proxy(..))
@@ -69,7 +70,7 @@ class GenericHasTSRep a where
   genericToTSRepImpl :: Proxy a -> String
 
 instance noArgumentsHasTSRep :: HasTSRep NoArguments where
-  toTSRep _ = "any" -- how the fuck do you make this nothing that works??
+  toTSRep _ = "" -- rotten value to indicate we have nothing to write
 
 instance argumentsHasTSRep ::
   ( HasTSRep a
@@ -84,7 +85,9 @@ instance constructorGenericHasTSRep ::
   ) => GenericHasTSRep (Constructor name ty) where
   genericToTSRepImpl _ =
     "{" <> "tag:\"" <> tag <> "\""
-      <> ",content:" <> content <> "}"
+      <> if null content -- if nothing is given back, we won't print it
+            then "}"
+            else ",content:" <> content <> "}"
     where
       namep = SProxy :: SProxy name
       tag = reflectSymbol namep

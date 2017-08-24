@@ -27,7 +27,7 @@ Output:
 
 ```ts
 type Fruits =
-  | { tag: "Watermelon", content: any }
+  | { tag: "Watermelon" }
   | { tag: "Grapes", content: number }
   | { tag: "Banana", content: { color: string, count: number } };
 
