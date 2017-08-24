@@ -25,7 +25,7 @@ instance sumGenericSumToRowList ::
   ) => GenericSumToRowList (Sum a b) rl
 
 instance constructorGenericSumToRowList ::
-  ( RowListAppend Nil (Cons name ty Nil) rl
+  ( TypeEquals (RLProxy (Cons name ty Nil)) (RLProxy rl)
   ) => GenericSumToRowList (Constructor name ty) rl
 
 -- https://github.com/LiamGoodacre/purescript-typelevel-prelude/blob/7fba5aab064f4f3b7fb05a183404abcca4d7d84d/src/Type/Row.purs
