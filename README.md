@@ -17,10 +17,15 @@ data Fruits
 derive instance genericFruits :: Generic Fruits _
 instance fruitsHasTSRep :: HasTSRep Fruits where
   toTSRep = genericToTSRep
+instance fruitsHasIOTSRep :: HasIOTSRep Fruits where
+  toIOTSRep = genericToIOTSRep
 
 main = do
-  log $ getTSRep "Fruits" (Proxy :: Proxy Fruits)
-  log $ getTSRep "Thingy" (Proxy :: Proxy {a :: Number, b :: Boolean, c :: {d :: String}})
+  log' $ getTSRep "Fruits" (Proxy :: Proxy Fruits)
+  log' $ getTSRep "Thingy" (Proxy :: Proxy {a :: Number, b :: Boolean, c :: {d :: String}})
+  log' $ getIOTSRep "Fruits" (Proxy :: Proxy Fruits)
+  where
+    log' = log <<< format defaultOptions
 ```
 
 Output:
@@ -32,4 +37,13 @@ type Fruits =
   | { tag: "Banana", content: { color: string, count: number } };
 
 type Thingy = { a: number, b: boolean, c: { d: string } };
+
+export const iFruits = t.union([
+  t["interface"]({ tag: t.literal("Watermelon") }),
+  t["interface"]({ tag: t.literal("Grapes"), content: t.number }),
+  t["interface"]({
+    tag: t.literal("Banana"),
+    content: t["interface"]({ color: t.string, count: t.number })
+  })
+]);
 ```

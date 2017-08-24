@@ -2,8 +2,9 @@ module Bundaegi where
 
 import Prelude
 
+import Bundaegi.Internal (class FieldsToRow)
 import Data.Foldable (intercalate)
-import Data.Generic.Rep (class Generic, Argument, Constructor, Field, NoArguments, Product, Rec, Sum)
+import Data.Generic.Rep (class Generic, Argument, Constructor, NoArguments, Product, Rec, Sum)
 import Data.List (List, (:))
 import Data.Monoid (mempty)
 import Data.String (null)
@@ -117,15 +118,3 @@ instance recHasTSRep ::
   toTSRep _ = toTSRep p
     where
       p = Proxy :: Proxy (Record row)
-
-class FieldsToRow fields (row :: # Type)
-
-instance fieldFieldsToRow ::
-  ( RowCons name ty () row
-  ) => FieldsToRow (Field name ty) row
-
-instance productFieldsToRow ::
-  ( FieldsToRow a l
-  , FieldsToRow b r
-  , Union l r row
-  ) => FieldsToRow (Product a b) row
