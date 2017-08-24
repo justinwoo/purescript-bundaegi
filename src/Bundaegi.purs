@@ -3,85 +3,78 @@ module Bundaegi where
 import Prelude
 
 import Data.Foldable (intercalate)
-import Data.Generic.Rep (class Generic, Argument, Constructor, NoArguments, Product, Sum)
+import Data.Generic.Rep (class Generic, Argument, Constructor, Field, NoArguments, Product, Rec, Sum)
 import Data.List (List, (:))
 import Data.Monoid (mempty)
 import Partial.Unsafe (unsafeCrashWith)
-import Type.Prelude (class IsSymbol, class RowToList, RLProxy(..), SProxy(..), reflectSymbol)
+import Type.Prelude (class IsSymbol, class RowToList, RLProxy(RLProxy), SProxy(SProxy), reflectSymbol)
 import Type.Proxy (Proxy(..))
 import Type.Row (Cons, Nil, kind RowList)
-
-type Indents = Int
-
-getIndents :: Int -> String
-getIndents 0 = ""
-getIndents n = "  " <> getIndents (n - 1)
 
 getTSRep :: forall a
    . HasTSRep a
   => String -> Proxy a -> String
-getTSRep name p = "type " <> name <> " = " <> toTSRep 0 p
+getTSRep name p = "type " <> name <> "=" <> toTSRep p
 
 class HasTSRep a where
-  toTSRep :: Indents -> Proxy a -> String
+  toTSRep :: Proxy a -> String
 
 instance numberHasTSRep :: HasTSRep Number where
-  toTSRep _ _ = "number"
+  toTSRep _ = "number"
 instance stringHasTSRep :: HasTSRep String where
-  toTSRep _ _ = "string"
+  toTSRep _ = "string"
 instance booleanHasTSRep :: HasTSRep Boolean where
-  toTSRep _ _ = "boolean"
+  toTSRep _ = "boolean"
 instance arrayHasTSRep :: HasTSRep a => HasTSRep (Array a) where
-  toTSRep i _ = toTSRep i p <> "[]"
+  toTSRep _ = toTSRep p <> "[]"
     where
       p = Proxy :: Proxy a
 instance recordHasTSRep ::
   ( RowToList row rl
   , HasTSRepFields rl
   ) => HasTSRep (Record row) where
-  toTSRep i _ = "{\n" <> indents <> "  " <> fields <> "\n" <> indents <> "}"
+  toTSRep _ = "{" <> fields <> "}"
     where
-      indents = getIndents i
       rlp = RLProxy :: RLProxy rl
-      fields = intercalate ("\n" <> indents <> "  ") $ toTSRepFields (i + 2) rlp
+      fields = intercalate "," $ toTSRepFields rlp
 
 class HasTSRepFields (rl :: RowList) where
-  toTSRepFields :: Indents -> RLProxy rl -> List String
+  toTSRepFields :: RLProxy rl -> List String
 
 instance consHasTSRepFields ::
   ( IsSymbol name
   , HasTSRep ty
   , HasTSRepFields tail
   ) => HasTSRepFields (Cons name ty tail) where
-  toTSRepFields i _ = head : tail
+  toTSRepFields _ = head : tail
     where
       namep = SProxy :: SProxy name
       key = reflectSymbol namep
       typ = Proxy :: Proxy ty
-      value = toTSRep (i + 1) typ
-      head = key <> " : " <> value
+      value = toTSRep typ
+      head = key <> ":" <> value
       tailp = RLProxy :: RLProxy tail
-      tail = toTSRepFields i tailp
+      tail = toTSRepFields tailp
 
 instance nilHasTSRepFields :: HasTSRepFields Nil where
-  toTSRepFields _ _ = mempty
+  toTSRepFields _ = mempty
 
 genericToTSRep :: forall a rep
    . Generic a rep
   => GenericHasTSRep rep
-  => Indents -> Proxy a -> String
-genericToTSRep i _ = genericToTSRepImpl i (Proxy :: Proxy rep)
+  => Proxy a -> String
+genericToTSRep _ = genericToTSRepImpl (Proxy :: Proxy rep)
 
 class GenericHasTSRep a where
-  genericToTSRepImpl :: Indents -> Proxy a -> String
+  genericToTSRepImpl :: Proxy a -> String
 
 instance noArgumentsHasTSRep :: HasTSRep NoArguments where
-  toTSRep _ _ = "never"
+  toTSRep _ = "any" -- how the fuck do you make this nothing that works??
 
 instance argumentsHasTSRep ::
   ( HasTSRep a
   ) => HasTSRep (Argument a) where
-  toTSRep i _ = toTSRep i p
+  toTSRep _ = toTSRep p
     where
       p = Proxy :: Proxy a
 
@@ -89,30 +82,47 @@ instance constructorGenericHasTSRep ::
   ( IsSymbol name
   , HasTSRep ty
   ) => GenericHasTSRep (Constructor name ty) where
-  genericToTSRepImpl i _ =
-    "{\n" <> indents <> "  tag : \"" <> tag <> "\""
-      <> "\n" <> indents <> "  content : " <> content
-      <> "\n" <> indents <> "}"
+  genericToTSRepImpl _ =
+    "{" <> "tag:\"" <> tag <> "\""
+      <> ",content:" <> content <> "}"
     where
-      indents = getIndents (i + 1)
       namep = SProxy :: SProxy name
       tag = reflectSymbol namep
       typ = Proxy :: Proxy ty
-      content = toTSRep (i + 1) typ
+      content = toTSRep typ
 
 instance sumGenericHasTSRep ::
   ( GenericHasTSRep a
   , GenericHasTSRep b
   ) => GenericHasTSRep (Sum a b) where
-  genericToTSRepImpl i _ =
-    "\n" <> indent <> "| " <> a
-      <> "\n" <> indent <> "| " <> b
+  genericToTSRepImpl _ =
+    a <> "|" <> b
     where
-      indent = getIndents (i + 1)
-      a = genericToTSRepImpl (i + 1) (Proxy :: Proxy a)
-      b = genericToTSRepImpl (i + 1) (Proxy :: Proxy b)
+      a = genericToTSRepImpl (Proxy :: Proxy a)
+      b = genericToTSRepImpl (Proxy :: Proxy b)
 
 instance productGenericHasTSRep ::
   ( Fail "I'm not going to deal with encoding product types in TS, use a record"
   ) => GenericHasTSRep (Product a b) where
-  genericToTSRepImpl _ _ = unsafeCrashWith "unreachable product impl"
+  genericToTSRepImpl _ = unsafeCrashWith "unreachable product impl"
+
+instance recHasTSRep ::
+  ( FieldsToRow fields row
+  , RowToList row ls
+  , HasTSRep (Record row)
+  ) => HasTSRep (Rec fields) where
+  toTSRep _ = toTSRep p
+    where
+      p = Proxy :: Proxy (Record row)
+
+class FieldsToRow fields (row :: # Type)
+
+instance fieldFieldsToRow ::
+  ( RowCons name ty () row
+  ) => FieldsToRow (Field name ty) row
+
+instance productFieldsToRow ::
+  ( FieldsToRow a l
+  , FieldsToRow b r
+  , Union l r row
+  ) => FieldsToRow (Product a b) row
