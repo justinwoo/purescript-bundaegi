@@ -16,7 +16,7 @@ import Type.Row (Cons, Nil, kind RowList)
 getIOTSRep :: forall a
    . HasIOTSRep a
   => String -> Proxy a -> String
-getIOTSRep name p = "export const i" <> name <> "=" <> toIOTSRep p
+getIOTSRep name p = "export const " <> name <> "=" <> toIOTSRep p
 
 class HasIOTSRep a where
   toIOTSRep :: Proxy a -> String

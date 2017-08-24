@@ -7,7 +7,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "pulp test && tsc --noEmit test/test.ts"
   },
   "repository": {
     "type": "git",
@@ -20,6 +20,8 @@
   },
   "homepage": "https://github.com/justinwoo/purescript-bundaegi#readme",
   "devDependencies": {
-    "prettier": "^1.5.3"
+    "io-ts": "^0.6.1",
+    "prettier": "^1.5.3",
+    "typescript": "^2.4.2"
   }
 }

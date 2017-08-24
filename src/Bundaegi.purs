@@ -16,7 +16,7 @@ import Type.Row (Cons, Nil, kind RowList)
 getTSRep :: forall a
    . HasTSRep a
   => String -> Proxy a -> String
-getTSRep name p = "type " <> name <> "=" <> toTSRep p
+getTSRep name p = "export type " <> name <> "=" <> toTSRep p
 
 class HasTSRep a where
   toTSRep :: Proxy a -> String
