@@ -1,9 +1,11 @@
-# purescript-bundaegi (WIP?)
+# purescript-bundaegi
 ...because nobody really wants to eat boiled silkworms (or write Typescript)
 
-A library to generate some Typescript types from Purescript using Generics and RowList
+![](http://i.imgur.com/q7tyceP.png)
 
-Please let me know if you're interested in improving this :-DDD
+A library to generate some Typescript types from Purescript.
+
+You might use this to integrate a Purescript core into your application. IO-TS schemas provided if you want to send data through something and validate (e.g. storage, ajax).
 
 ## Example
 
