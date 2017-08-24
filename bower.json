@@ -12,6 +12,7 @@
     "purescript-lists": "^4.9.0"
   },
   "devDependencies": {
-    "purescript-spec": "^1.0.0"
+    "purescript-spec": "^1.0.0",
+    "purescript-prettier": "^0.0.2"
   }
 }
