@@ -1,4 +1,7 @@
 # purescript-bundaegi
+
+[![Build Status](https://travis-ci.org/justinwoo/purescript-bundaegi.svg?branch=master)](https://travis-ci.org/justinwoo/purescript-bundaegi)
+
 ...because nobody really wants to eat boiled silkworms (or write Typescript)
 
 ![](http://i.imgur.com/q7tyceP.png)
