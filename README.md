@@ -8,7 +8,9 @@
 
 A library to generate some Typescript types from Purescript.
 
-You might use this to integrate a Purescript core into your application. IO-TS schemas provided if you want to send data through something and validate (e.g. storage, ajax).
+The primary purpose of this library is to allow you to write more correct models in Purescript and then have Typescript type signatures for use in your project, and io-ts schemas generated for doing validation on external data (e.g. ajax).
+
+Please feel free to ask me questions [@jusrin00](https://twitter.com/jusrin00) if you're interested in using this library and need some more information.
 
 ## Example
 
