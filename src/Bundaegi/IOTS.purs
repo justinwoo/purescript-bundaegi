@@ -96,9 +96,7 @@ instance constructorGenericHasIOTSRep ::
       content = toIOTSRep typ
 
 instance sumGenericHasIOTSRep ::
-  ( GenericSumToRowList a l
-  , GenericSumToRowList b r
-  , RowListAppend l r rl
+  ( GenericSumToRowList (Sum a b) rl
   , HasIOTSRepUnionList rl
   ) => GenericHasIOTSRep (Sum a b) where
   genericToIOTSRepImpl _ =

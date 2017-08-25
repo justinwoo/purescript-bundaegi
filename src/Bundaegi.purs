@@ -2,7 +2,7 @@ module Bundaegi where
 
 import Prelude
 
-import Bundaegi.Internal (class FieldsToRow)
+import Bundaegi.Internal (class FieldsToRow, class GenericSumToRowList)
 import Data.Foldable (intercalate)
 import Data.Generic.Rep (class Generic, Argument, Constructor, NoArguments, Product, Rec, Sum)
 import Data.List (List, (:))
@@ -96,14 +96,14 @@ instance constructorGenericHasTSRep ::
       content = toTSRep typ
 
 instance sumGenericHasTSRep ::
-  ( GenericHasTSRep a
-  , GenericHasTSRep b
+  ( GenericSumToRowList (Sum a b) rl
+  , HasTSRepUnionList rl
   ) => GenericHasTSRep (Sum a b) where
   genericToTSRepImpl _ =
-    a <> "|" <> b
+    intercalate "|" members
     where
-      a = genericToTSRepImpl (Proxy :: Proxy a)
-      b = genericToTSRepImpl (Proxy :: Proxy b)
+      rlp = RLProxy :: RLProxy rl
+      members = unionListToTSRep rlp
 
 instance productGenericHasTSRep ::
   ( Fail "I'm not going to deal with encoding product types in TS, use a record"
@@ -118,3 +118,20 @@ instance recHasTSRep ::
   toTSRep _ = toTSRep p
     where
       p = Proxy :: Proxy (Record row)
+
+class HasTSRepUnionList (rl :: RowList) where
+  unionListToTSRep :: RLProxy rl -> List String
+
+instance nilHasTSRepUnionList :: HasTSRepUnionList Nil where
+  unionListToTSRep _ = mempty
+
+instance consHasTSRepUnionList ::
+  ( HasTSRepUnionList tail
+  , GenericHasTSRep (Constructor name ty)
+  ) => HasTSRepUnionList (Cons name ty tail) where
+  unionListToTSRep _ = head : tail
+    where
+      p = Proxy :: Proxy (Constructor name ty)
+      head = genericToTSRepImpl p
+      tailp = RLProxy :: RLProxy tail
+      tail = unionListToTSRep tailp
