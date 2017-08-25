@@ -112,7 +112,6 @@ instance productGenericHasTSRep ::
 
 instance recHasTSRep ::
   ( FieldsToRow fields row
-  , RowToList row ls
   , HasTSRep (Record row)
   ) => HasTSRep (Rec fields) where
   toTSRep _ = toTSRep p
