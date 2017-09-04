@@ -10,6 +10,8 @@ A library to generate some Typescript types from Purescript.
 
 The primary purpose of this library is to allow you to write more correct models in Purescript and then have Typescript type signatures for use in your project, and io-ts schemas generated for doing validation on external data (e.g. ajax).
 
+If you want to integrate a Typescript and Purescript, you might be more interested in this project: https://github.com/justinwoo/purescript-ohyes
+
 Please feel free to ask me questions [@jusrin00](https://twitter.com/jusrin00) if you're interested in using this library and need some more information.
 
 ## Example
